@@ -8,9 +8,10 @@ de ejecutar).
 
 **Entorno con el que se obtuvieron las cifras** (comprobado ejecutando
 `python3 -c "import sys, pandas, numpy, sklearn; ..."`): Python 3.13.16,
-pandas 3.0.5, numpy 2.5.3, scikit-learn 1.9.1. `requirements.txt` solo fija
-mínimos; fijar estas versiones exactas le corresponde al responsable del
-proyecto.
+pandas 3.0.5, numpy 2.5.3, scikit-learn 1.9.1. `requirements.txt` conserva
+mínimos a propósito, por decisión del responsable del proyecto: pandas 3.0
+exige Python ≥ 3.11 y el curso admite 3.10. Las versiones exactas están en
+`versiones_exactas.txt`.
 
 ## Protocolo
 
@@ -176,8 +177,9 @@ Guardado: resultados/particion_unica.csv, resultados/particion_vs_cv.csv
    `purpose`): para árboles es aceptable, pero el auditor puede querer
    comprobar si una codificación con orden natural o one-hot cambia algo.
 5. **Reproducibilidad entre versiones**: el entorno completo ya está anotado
-   arriba (ver H7). `requirements.txt` sigue con mínimos hasta que el
-   responsable del proyecto lo fije.
+   arriba (ver H7). `requirements.txt` conserva mínimos a
+   propósito (pandas 3.0 exige Python ≥ 3.11 y el curso admite 3.10). Las
+   versiones exactas están en `versiones_exactas.txt`. Duda cerrada.
 
 ## Correcciones tras la auditoría
 
