@@ -77,9 +77,15 @@ ese archivo.
 ## Riesgos
 
 **Fuga de información: no se encontró ninguna columna que contenga o derive de
-`clase`.** Comprobación ejecutada: para cada predictora (numéricas agrupadas en
-quintiles) se calculó la tabla cruzada con `clase` y la V de Cramér. Ninguna
-categoría es 100 % de una sola clase y la asociación más alta es moderada:
+`clase`.** Comprobación ejecutada: para cada predictora se calculó la tabla
+cruzada con `clase` y la V de Cramér. Las columnas de texto se usaron con sus
+categorías tal cual. Las numéricas se agruparon con
+`pd.qcut(columna, 5, duplicates="drop")`. Como hay valores repetidos, solo
+`duration`, `credit_amount` y `age` quedan en 5 intervalos;
+`installment_commitment` queda en 3, y `residence_since` y `existing_credits`
+en 2. `num_dependents` queda en 1 intervalo con `qcut`, así que se usó sin
+agrupar (valores 1 y 2). Ninguna categoría o intervalo es 100 % de una sola
+clase, y la asociación más alta es moderada:
 
 | columna | V de Cramér con `clase` |
 |---|---:|
@@ -128,7 +134,12 @@ malos (ver piso arriba).
    `job`, `own_telephone`, `foreign_worker`. Codificarlas con
    `OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1)`
    **dentro** del `Pipeline` (vía `ColumnTransformer`) para que se ajuste en
-   cada pliegue; `handle_unknown` es necesario por las categorías raras.
+   cada pliegue. `handle_unknown` es una salvaguarda, no una necesidad
+   observada: con `StratifiedKFold(5, shuffle=True, random_state=42)` y con
+   `train_test_split(test_size=0.25, stratify=y)` para las semillas 0–9, no
+   aparece en prueba ninguna categoría que falte en entrenamiento (0 casos).
+   Aun así conviene dejarlo, por las categorías raras (p. ej.
+   `purpose = retraining`, 9 filas) y por datos nuevos.
 3. **Numéricas (7) en `passthrough`:** `duration`, `credit_amount`,
    `installment_commitment`, `residence_since`, `age`, `existing_credits`,
    `num_dependents`. No hace falta imputar ni escalar (no hay faltantes y los
@@ -147,3 +158,18 @@ malos (ver piso arriba).
    auditor las evalúe por subgrupo.
 
 Entregado a: ingeniero-de-modelos
+
+## Correcciones tras la auditoría
+
+Cambios hechos tras revisar `AUDIT_REPORT.md`. Ninguna cifra ni conclusión
+cambia: solo se precisa cómo se obtuvieron.
+
+- **H5:** se reemplazó "numéricas agrupadas en quintiles" por el método exacto
+  que usé: `pd.qcut(..., 5, duplicates="drop")`, con el número real de
+  intervalos de cada columna, y `num_dependents` sin agrupar. Lo comprobé
+  volviendo a ejecutar el agrupamiento. Las V de Cramér publicadas (rango
+  0.003–0.352) salen de este método.
+- **H6:** se reformuló que `handle_unknown` es "necesario". Ahora se presenta
+  como salvaguarda, porque volví a ejecutar la comprobación y no aparece
+  ninguna categoría nueva en prueba: 0 casos en los 5 pliegues y 0 casos en
+  las 10 semillas.
