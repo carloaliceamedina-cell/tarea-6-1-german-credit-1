@@ -202,3 +202,75 @@ Responsable: analista de datos.
 Entregado a: responsable del proyecto (Carlo) y roles con hallazgos (analista
 de datos: H5, H6; ingeniero de modelos: H2, H3, H7; responsable del proyecto:
 H1, H2, H4).
+
+---
+
+## Segunda revisión
+
+Fecha: 2026-10-12. Entradas: commits `c068d35` (analista: `datos/RESUMEN.md`),
+`f39b23f` (ingeniero: `RESULTADOS.md`) y `a113057` (Carlo: `README.md`,
+`evidencia/bitacora_flujo.md`, `versiones_exactas.txt`). Los leí con
+`git log --stat` y `git show`, solo en modo lectura.
+
+### Qué se comprobó
+
+**Cada rol tocó solo sus archivos.**
+- Los tres commits de corrección modifican únicamente los archivos de su rol.
+- Ningún commit posterior a `2ae4db5` toca el código (`datos.py`,
+  `modelos.py`, `validacion.py`, `tabla_cv.py`, `particion_vs_cv.py`), ni
+  `resultados/` ni `datos/credit_g.csv`. El MD5 de los datos sigue siendo
+  `19d37d4238836d135ab13d73dc42d5e4`.
+
+**Las cifras no cambiaron.**
+- Copié `resultados/` a `/tmp/claude-0/auditor_copia/segunda/` y volví a
+  ejecutar `python3 tabla_cv.py` y `python3 particion_vs_cv.py` en el proyecto.
+  Los 3 CSV salieron idénticos byte a byte. Restauré la copia (con su fecha) y
+  borré `__pycache__`; `git status` queda limpio.
+- Volví a ejecutar `python3 auditoria.py`, que no se modificó.
+  - Las 8 revisiones siguen en PASA.
+  - La salida de consola coincide con la copiada en RESULTADOS.md.
+  - El RESUMEN corregido sigue con 0 discrepancias.
+
+**Enlaces.**
+- Extraje de README.md y ROLES.md todas las rutas de archivo citadas: 16 en
+  README y 15 en ROLES. Todas existen.
+- Solo dos no resuelven literalmente, y no son enlaces rotos:
+  - `RESUMEN.md` es la forma corta de `datos/RESUMEN.md`.
+  - `resultados/*.csv` es un patrón que corresponde a los 3 CSV.
+- `docs/flujo.md` ya no se cita.
+
+| Hallazgo | Estado | Evidencia |
+|---|---|---|
+| H1. Referencias rotas en README/ROLES (Carlo) | **CERRADO** | README.md reescrito; ya no cita `docs/flujo.md`. Existe `evidencia/bitacora_flujo.md`, el archivo que cita ROLES.md. Todas las rutas de README.md (16) y ROLES.md (15) existen. |
+| H2. Elegir por exactitud lleva al modelo más caro (ingeniero / Carlo) | **ACEPTADO COMO DECISIÓN** | La parte del reporte está corregida. RESULTADOS añade que "la exactitud no basta para elegir modelo", con 141/161 (árbol) y 187/54 (RF) malos aprobados / buenos rechazados y coste 866 frente a 989; coinciden con `auditoria.py`, sección 8. El umbral y `class_weight` no se cambian en la 6.1: en la bitácora (Decisiones, H2) pasan a la 6.2 con CV anidada y declarados antes de medir. Es coherente con la regla de no ajustar tras ver resultados. |
+| H3. Árbol "por debajo" del piso (ingeniero) | **CERRADO** | La tabla, la lectura y la duda 2 dicen ahora "no mejora el piso, indistinguible (−0.002 ± 0.017)". Las exactitudes por pliegue citadas (0.710, 0.710, 0.665, 0.705, 0.700; 3 de 5 por encima de 0.70) coinciden con `auditoria.py`, sección 1. El ± 0.017 (ddof=0) y mi ± 0.019 (ddof=1) son la misma dispersión con distinta convención, como explica el ingeniero. La nota sobre `supera_piso_0.70` aclara que es una comparación estricta y no una prueba. |
+| H4. Variables sensibles como predictoras (Carlo) | **ACEPTADO COMO DECISIÓN** | La bitácora (Decisiones, H4) mantiene las 20 predictoras en la 6.1 para seguir el protocolo del curso. La variante sin `age`, `personal_status` y `foreign_worker` se medirá en la 6.2, decidida antes de ver resultados. La auditoría por subgrupo de la revisión 7 sigue vigente. |
+| H5. Método de la V de Cramér impreciso (analista) | **CERRADO** | El RESUMEN describe ahora `pd.qcut(columna, 5, duplicates="drop")`: 5 intervalos para `duration`, `credit_amount` y `age`; 3 para `installment_commitment`; 2 para `residence_since` y `existing_credits`; `num_dependents` sin agrupar. Coincide con los avisos de `auditoria.py`, sección 4. Con ese método salen las 5 V publicadas y el rango 0.003–0.154; ninguna categoría o intervalo es puro. |
+| H6. `handle_unknown` presentado como "necesario" (analista) | **CERRADO** | La indicación 2 lo presenta como salvaguarda, con 0 categorías nuevas en los 5 pliegues y en las 10 semillas. Coincide con `auditoria.py`, sección 2 ("CV=0, partición única (10 semillas)=0"). |
+| H7. Entorno incompleto (ingeniero / Carlo) | **CERRADO** | RESULTADOS anota Python 3.13.16, pandas 3.0.5, numpy 2.5.3 y scikit-learn 1.9.1. `versiones_exactas.txt` las fija, más openpyxl 3.1.5; las cinco coinciden con el entorno real (`auditoria.py`, sección 0, y `openpyxl.__version__`). `requirements.txt` conserva mínimos a propósito: pandas 3.0 requiere Python ≥ 3.11 y el curso admite 3.10. Queda justificado en `versiones_exactas.txt`. |
+
+### Observaciones nuevas (no bloquean)
+
+- **O1 (Carlo).** `evidencia/bitacora_flujo.md` cita
+  `evidencia/04_auditor_segunda_revision.md`, que todavía no existe. Se
+  entiende que es el registro de esta revisión. Hay que crearlo al cerrar el
+  flujo, o la bitácora quedará con un enlace roto.
+- **O2 (ingeniero).** RESULTADOS dice en la sección H7 y en la duda 5 que
+  `requirements.txt` sigue con mínimos "hasta que el responsable lo fije".
+  Ahora la decisión es mantener los mínimos a propósito y documentar las
+  versiones exactas en `versiones_exactas.txt`. Conviene actualizar esa frase
+  en una próxima edición; no afecta a ninguna cifra.
+
+### Veredicto final: **APROBADO**
+
+- Los cinco hallazgos que pedían corrección (H1, H3, H5, H6, H7) están
+  cerrados y comprobados ejecutando.
+- H2 y H4 quedan aceptados como decisiones documentadas del responsable del
+  proyecto. Ambas trasladan el trabajo a la Tarea 6.2 con protocolo declarado
+  de antemano.
+- Las cifras no cambiaron: los CSV son idénticos byte a byte y las 8
+  revisiones siguen en PASA.
+- Las observaciones O1 y O2 son de documentación y no afectan al veredicto.
+
+Entregado a: responsable del proyecto (Carlo); con copia al ingeniero de
+modelos (O2).
