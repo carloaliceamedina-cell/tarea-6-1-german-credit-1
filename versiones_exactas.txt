@@ -1,0 +1,8 @@
+# Entorno exacto con el que se obtuvieron las cifras (2026-10-12)
+# requirements.txt fija mínimos para que instale con Python 3.10+;
+# este archivo documenta las versiones exactas usadas.
+python==3.13.16
+pandas==3.0.5
+numpy==2.5.3
+scikit-learn==1.9.1
+openpyxl==3.1.5
