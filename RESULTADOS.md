@@ -4,7 +4,13 @@ Rol: ingeniero de modelos · MAI 540, Tarea 6.1 · Fecha: 2026-10-12
 
 Entrada: `datos/RESUMEN.md` (analista) y `datos/credit_g.csv` (solo lectura;
 MD5 `19d37d4238836d135ab13d73dc42d5e4`, igual al del RESUMEN antes y después
-de ejecutar). Entorno: Python 3, scikit-learn 1.9.1.
+de ejecutar).
+
+**Entorno con el que se obtuvieron las cifras** (comprobado ejecutando
+`python3 -c "import sys, pandas, numpy, sklearn; ..."`): Python 3.13.16,
+pandas 3.0.5, numpy 2.5.3, scikit-learn 1.9.1. `requirements.txt` solo fija
+mínimos; fijar estas versiones exactas le corresponde al responsable del
+proyecto.
 
 ## Protocolo
 
@@ -34,17 +40,37 @@ Se ejecutaron dos veces y los tres CSV salieron idénticos byte a byte.
 
 ## Tabla de validación cruzada (5 pliegues)
 
-| Modelo | Exactitud media | Desv. | Malos detectados (recall `bad`) | Desv. por pliegue | Detectados | ¿Supera 0.70? |
-|---|---:|---:|---:|---:|---:|:---:|
-| Árbol de decisión | 0.6980 | 0.0169 | 0.5300 | 0.0414 | 159/300 | No |
-| Random Forest | 0.7590 | 0.0058 | 0.3767 | 0.0170 | 113/300 | Sí |
+| Modelo | Exactitud media | Desv. | Malos detectados (recall `bad`) | Desv. por pliegue | Detectados | Exactitud frente al piso 0.70 |
+|---|---:|---:|---:|---:|---:|:---|
+| Árbol de decisión | 0.6980 | 0.0169 | 0.5300 | 0.0414 | 159/300 | No mejora el piso: −0.002 ± 0.017, indistinguible |
+| Random Forest | 0.7590 | 0.0058 | 0.3767 | 0.0170 | 113/300 | +0.059 por encima |
 
-Archivo: `resultados/tabla_cv.csv`.
+Archivo: `resultados/tabla_cv.csv`. La columna `supera_piso_0.70` del CSV y
+de la consola es una comparación estricta de la media (`media > 0.70`). No es
+una prueba de significancia, así que el `False` del árbol debe leerse como
+"no mejora el piso", no como "es peor que el piso".
 
-Lectura: el árbol no supera el piso de exactitud (0.698 < 0.70), aunque
-detecta más malos (53 %). El Random Forest supera el piso por ~6 puntos, pero
-deja sin detectar a casi dos de cada tres malos (62 %). Ninguno de los dos es
-claramente "bueno" para la clase de interés.
+Lectura:
+
+- **Árbol:** su exactitud no mejora el piso, pero tampoco queda por debajo de
+  forma distinguible. La diferencia es −0.002, mucho menor que la desviación
+  entre pliegues (0.017). Las exactitudes por pliegue son 0.710, 0.710, 0.665,
+  0.705 y 0.700, es decir, queda por encima del piso en 3 de 5 pliegues. A
+  cambio, detecta 159 de 300 malos (53 %), frente a 0 del clasificador
+  "siempre `good`".
+- **Random Forest:** supera el piso de exactitud por ~6 puntos, pero detecta
+  solo 113 de 300 malos (38 %): aprueba a 187 de los 300 malos. **La exactitud
+  no basta para elegir modelo** en este problema con clases 70/30 y la clase
+  `bad` como clase de interés. Según el auditor (AUDIT_REPORT.md, H2 y
+  revisión 8), con la matriz de coste del conjunto (malo aceptado = 5, bueno
+  rechazado = 1) el árbol cuesta 866 y el RF 989. Comprobé esas cifras en
+  memoria con las mismas predicciones de `cross_val_predict` (árbol: 141 malos
+  aprobados y 161 buenos rechazados; RF: 187 y 54), sin modificar código ni
+  `resultados/`. Por eso el RF no debe presentarse como el mejor solo por su
+  exactitud.
+- **Ajustes pendientes:** cualquier ajuste del umbral de decisión o de
+  `class_weight` queda para la Tarea 6.2. Tendrá que declararse antes de medir
+  y evaluarse con validación cruzada anidada. No se ejecutó aquí.
 
 ## Partición única (10 semillas) frente a validación cruzada — exactitud
 
@@ -58,7 +84,7 @@ exactitud y recall de `bad`) y `resultados/particion_vs_cv.csv`.
 
 Lectura: con una sola partición, la exactitud depende mucho de la semilla
 (rango de 11 puntos en el árbol y 8 en el RF). Según la semilla, el árbol
-parecería "superar el piso" (semilla 4: 0.704; semilla 9: 0.720) o quedar muy
+parecería superar el piso (semilla 4: 0.704; semilla 9: 0.720) o quedar muy
 por debajo (semilla 0: 0.608). Por eso la cifra de referencia es la de la
 validación cruzada.
 
@@ -139,17 +165,37 @@ Guardado: resultados/particion_unica.csv, resultados/particion_vs_cv.csv
    `foreign_worker` como predictoras? Conviene medir exactitud y recall de
    `bad` por subgrupo (edad ≤ 25 vs > 25, `personal_status`, `foreign_worker`),
    teniendo en cuenta que `foreign_worker = no` tiene solo 37 filas.
-2. **Árbol bajo el piso**: con valores por defecto el árbol (0.698) no supera
-   el 0.70 de "siempre `good`". No se ajustaron hiperparámetros por regla de
-   rol; si se quisiera, tendría que hacerse con CV anidada y decidirse antes.
+2. **Árbol frente al piso**: con valores por defecto, el árbol (0.698) no
+   mejora el 0.70 de "siempre `good`", aunque la diferencia es indistinguible
+   (ver H3). No se ajustaron hiperparámetros por regla de rol. Si se quisiera,
+   tendría que decidirse antes y medirse con CV anidada.
 3. **Recall bajo del Random Forest** (0.377): el umbral de 0.5 por defecto
-   favorece a `good`. Cambiar el umbral o usar `class_weight` es una decisión
-   de negocio/protocolo que no tomé.
+   favorece a `good`. Cambiar el umbral o usar `class_weight` queda para la
+   Tarea 6.2, con CV anidada y declarado antes de medir (ver H2).
 4. **Codificación ordinal arbitraria** en variables nominales (p. ej.
    `purpose`): para árboles es aceptable, pero el auditor puede querer
    comprobar si una codificación con orden natural o one-hot cambia algo.
-5. **Reproducibilidad entre versiones**: las cifras son con scikit-learn 1.9.1;
-   `requirements.txt` solo fija mínimos (`>=1.3`), así que otra versión podría
-   dar decimales distintos.
+5. **Reproducibilidad entre versiones**: el entorno completo ya está anotado
+   arriba (ver H7). `requirements.txt` sigue con mínimos hasta que el
+   responsable del proyecto lo fije.
+
+## Correcciones tras la auditoría
+
+Solo se modificó este archivo. No cambiaron el código, las semillas, los
+hiperparámetros ni los archivos de `resultados/`. Todas las cifras previas
+siguen iguales.
+
+- **H3:** se cambió "no supera el piso" por "no mejora el piso, indistinguible
+  (−0.002 ± 0.017)" en la tabla, en la lectura y en la duda 2. Se añadieron las
+  exactitudes por pliegue (3 de 5 por encima de 0.70) y una nota sobre el
+  significado de `supera_piso_0.70`. El auditor da ± 0.019 como desviación;
+  aquí se usa 0.017, la desviación con ddof=0 de la tabla (la diferencia se
+  debe a la convención de cálculo).
+- **H2:** se añadió a la lectura que la exactitud no basta para elegir modelo,
+  junto con los malos aprobados, los buenos rechazados y el coste 5 : 1 que
+  calculó el auditor (comprobados en memoria). El ajuste de umbral o de
+  `class_weight` queda para la Tarea 6.2 con CV anidada; no se ejecutó.
+- **H7:** se anotó el entorno completo, comprobado ejecutando: Python 3.13.16,
+  pandas 3.0.5, numpy 2.5.3 y scikit-learn 1.9.1.
 
 Entregado a: auditor
