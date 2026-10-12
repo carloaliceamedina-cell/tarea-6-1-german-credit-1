@@ -24,6 +24,7 @@ auditoria.py               comprobaciones independientes del auditor
 AUDIT_REPORT.md            entregable del auditor (veredicto y hallazgos H1–H7)
 evidencia/                 respuesta de cada rol, mi revisión y bitácora del flujo
 versiones_exactas.txt      entorno exacto con el que se obtuvieron las cifras
+informe/                   informe técnico en APA 7 (.docx)
 ```
 
 ## Cómo reproducir
