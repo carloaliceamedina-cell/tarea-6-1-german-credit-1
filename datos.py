@@ -7,9 +7,27 @@ from sklearn.model_selection import StratifiedKFold
 RUTA_CSV = Path(__file__).resolve().parent / "datos" / "credit_g.csv"
 
 
+def validar_datos(df):
+    """Comprueba el CSV antes de entrenar (respuesta a V6.2 de la auditoría 6.2).
+
+    Lanza ValueError si falta la clase, si hay valores fuera de good/bad, si hay
+    faltantes o si cambia el número de filas/columnas esperado.
+    """
+    if "clase" not in df.columns:
+        raise ValueError("Falta la columna objetivo 'clase'")
+    extra = set(df["clase"].unique()) - {"good", "bad"}
+    if extra:
+        raise ValueError(f"Valores de 'clase' no esperados: {extra}")
+    if df.isna().any().any():
+        raise ValueError("Hay valores faltantes: " + str(df.columns[df.isna().any()].tolist()))
+    if df.shape != (1000, 21):
+        raise ValueError(f"Forma inesperada {df.shape}; se esperaba (1000, 21)")
+
+
 def cargar_datos(ruta=RUTA_CSV):
     """Devuelve X, y, cols_cat, cv (sin transformar los datos)."""
     df = pd.read_csv(ruta)
+    validar_datos(df)  # antes de cualquier fit
     # Clase positiva: 'bad' -> 1 (indicación 1 del RESUMEN)
     y = (df["clase"] == "bad").astype(int)
     # 'clase' nunca es predictora
