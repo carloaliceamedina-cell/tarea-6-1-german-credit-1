@@ -1,0 +1,12 @@
+collecting ... collected 8 items
+
+tests/test_modelo.py::test_supera_a_siempre_bueno[arbol_defecto] XFAIL   [ 12%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[arbol_afinado] PASSED  [ 25%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[random_forest] PASSED  [ 37%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[boosting] PASSED       [ 50%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[boosting_5a1_elegido] PASSED [ 62%]
+tests/test_modelo.py::test_resultado_estable PASSED                      [ 75%]
+tests/test_modelo.py::test_detecta_al_menos_la_mitad_de_los_malos PASSED [ 87%]
+tests/test_modelo.py::test_codificacion_dentro_del_pipeline_y_sin_objetivo PASSED [100%]
+
+========================= 7 passed, 1 xfailed in 8.18s =========================

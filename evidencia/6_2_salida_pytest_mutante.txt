@@ -1,0 +1,4 @@
+tests/test_mutante_tmp.py:54: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_mutante_tmp.py::test_detecta_al_menos_la_mitad_de_los_malos
+======================= 1 failed, 7 deselected in 2.50s ========================
