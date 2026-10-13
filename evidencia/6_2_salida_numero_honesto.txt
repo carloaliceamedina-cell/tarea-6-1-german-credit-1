@@ -1,0 +1,6 @@
+Número de la búsqueda (todos los datos):  0.730
+Prueba reservada (20 %): la búsqueda sobre el 80 % dijo 0.718 y la prueba dio 0.750  | ganador en el 80 %: {'modelo__max_depth': 4, 'modelo__min_samples_leaf': 50}
+CV anidada (5 externos × 5 internos):     0.740 ± 0.013
+  por pliegue externo: 0.740 0.720 0.760 0.745 0.735
+Optimismo de la búsqueda (búsqueda − anidada): -0.010
+Guardado: resultados/numero_honesto.csv
