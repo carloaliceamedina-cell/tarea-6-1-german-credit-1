@@ -1,0 +1,13 @@
+Mismo protocolo: StratifiedKFold(5, shuffle=True, random_state=42); coste = 5·FN + 1·FP
+Línea base 'siempre good': exactitud 0.700, malos detectados 0.00, coste 1500
+
+                  modelo  exactitud_media  exactitud_desv  malos_detectados  malos_aprobados_FN  buenos_rechazados_FP  coste  tiempo_ajuste_s
+ Árbol por defecto (6.1)            0.698           0.017             0.530                 141                   161    866            0.090
+           Árbol afinado            0.730           0.019             0.357                 193                    77   1042            0.089
+           Random Forest            0.759           0.006             0.377                 187                    54    989            0.928
+                Boosting            0.758           0.018             0.483                 155                    87    862            1.032
+Random Forest (peso 5:1)            0.694           0.024             0.713                  86                   220    650            0.997
+     Boosting (peso 5:1)            0.727           0.023             0.603                 119                   154    749            1.414
+
+Guardado: resultados/comparacion_modelos.csv
+(Los tiempos dependen del equipo; las demás cifras son deterministas.)
