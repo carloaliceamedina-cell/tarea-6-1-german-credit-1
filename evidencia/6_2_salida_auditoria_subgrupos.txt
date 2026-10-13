@@ -1,0 +1,14 @@
+Boosting 5:1 sin variables sensibles · malos detectados global: 0.640
+
+       variable              grupo   n  n_bad  exactitud  malos_detectados  buenos_rechazados
+        housing           for free 108     44      0.667             0.727              0.375
+        housing                own 713    186      0.742             0.613              0.213
+        housing               rent 179     70      0.698             0.657              0.275
+personal_status female div/dep/mar 310    109      0.726             0.606              0.209
+personal_status       male div/sep  50     20      0.640             0.700              0.400
+personal_status       male mar/wid  92     25      0.696             0.640              0.284
+personal_status        male single 548    146      0.739             0.658              0.231
+           edad               <=25 190     80      0.653             0.613              0.318
+           edad                >25 810    220      0.743             0.650              0.222
+
+Guardado: resultados/auditoria_subgrupos.csv
