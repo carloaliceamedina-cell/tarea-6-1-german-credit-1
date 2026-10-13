@@ -1,0 +1,79 @@
+Python 3.13.16 | copia de trabajo: /tmp/claude-0/auditoria_6_2/copia
+
+== Importación de módulos ==
+  datos.py         código de salida 0 
+  modelos.py       código de salida 0 
+  validacion.py    código de salida 0 
+  busqueda.py      código de salida 0 
+  curvas.py        código de salida 0 
+
+== Ejecución de scripts ==
+
+--- defecto_vs_afinado.py: código de salida 0 | error: False
+  salida idéntica a evidencia/6_2_salida_defecto_vs_afinado.txt: True
+  resultados/busqueda_arbol.csv reproducido (sin tiempo): True
+  salida:
+   | Espacio de búsqueda: {'modelo__max_depth': [2, 3, 4, 5, 6, 8, 10, None], 'modelo__min_samples_leaf': [1, 5, 10, 20, 50]} (40 combinaciones)
+   | Por defecto: 0.698 ± 0.017
+   | Afinado:     0.730 ± 0.019
+   | Mejora:      +0.032
+   | Configuración ganadora: {'modelo__max_depth': 5, 'modelo__min_samples_leaf': 1}
+   | 
+   | Las 5 mejores combinaciones:
+   | max_depth  min_samples_leaf  exactitud_media  exactitud_desv  rango
+   |         5                 1            0.730           0.019      1
+   |         5                 5            0.730           0.021      2
+   |         6                10            0.723           0.019      3
+   |         6                 1            0.722           0.020      4
+   |         4                20            0.721           0.045      5
+   | 
+   | Guardado: resultados/busqueda_arbol.csv
+
+--- numero_honesto.py: código de salida 0 | error: False
+  salida idéntica a evidencia/6_2_salida_numero_honesto.txt: True
+  resultados/numero_honesto.csv reproducido (sin tiempo): True
+  salida:
+   | Número de la búsqueda (todos los datos):  0.730
+   | Prueba reservada (20 %): la búsqueda sobre el 80 % dijo 0.718 y la prueba dio 0.750  | ganador en el 80 %: {'modelo__max_depth': 4, 'modelo__min_samples_leaf': 50}
+   | CV anidada (5 externos × 5 internos):     0.740 ± 0.013
+   |   por pliegue externo: 0.740 0.720 0.760 0.745 0.735
+   | Optimismo de la búsqueda (búsqueda − anidada): -0.010
+   | Guardado: resultados/numero_honesto.csv
+
+--- comparar_tres.py: código de salida 0 | error: False
+  salida vs evidencia/6_2_salida_comparar_tres.txt: se compara por CSV (columna de tiempo variable)
+  resultados/comparacion_modelos.csv reproducido (sin tiempo): True
+  salida:
+   | Mismo protocolo: StratifiedKFold(5, shuffle=True, random_state=42); coste = 5·FN + 1·FP
+   | Línea base 'siempre good': exactitud 0.700, malos detectados 0.00, coste 1500
+   | 
+   |                   modelo  exactitud_media  exactitud_desv  malos_detectados  malos_aprobados_FN  buenos_rechazados_FP  coste  tiempo_ajuste_s
+   |  Árbol por defecto (6.1)            0.698           0.017             0.530                 141                   161    866            0.096
+   |            Árbol afinado            0.730           0.019             0.357                 193                    77   1042            0.071
+   |            Random Forest            0.759           0.006             0.377                 187                    54    989            0.933
+   |                 Boosting            0.758           0.018             0.483                 155                    87    862            1.250
+   | Random Forest (peso 5:1)            0.694           0.024             0.713                  86                   220    650            0.961
+   |      Boosting (peso 5:1)            0.727           0.023             0.603                 119                   154    749            1.419
+   | 
+   | Guardado: resultados/comparacion_modelos.csv
+   | (Los tiempos dependen del equipo; las demás cifras son deterministas.)
+
+--- sin_variables_sensibles.py: código de salida 0 | error: False
+  salida idéntica a evidencia/6_2_salida_sin_sensibles.txt: True
+  resultados/sin_variables_sensibles.csv reproducido (sin tiempo): True
+  salida:
+   | modelo  exactitud_media  exactitud_desv  malos_detectados  malos_aprobados_FN  buenos_rechazados_FP  coste
+   |                             Boosting 5:1 — 20 variables            0.727           0.023             0.603                 119                   154    749
+   | Boosting 5:1 — sin age, personal_status, foreign_worker            0.726           0.020             0.640                 108                   166    706
+   | Guardado: resultados/sin_variables_sensibles.csv
+
+--- curvas_comparadas.py: código de salida 0 | error: False
+  salida idéntica a evidencia/6_2_salida_curvas.txt: True
+  resultados/curvas_aprendizaje.csv reproducido (sin tiempo): True
+  salida:
+   | Árbol por defecto (6.1)              entrenamiento 1.000 | validación 0.698 | brecha 0.302 | validación en 120 → 800: 0.683 → 0.698
+   | Árbol afinado                        entrenamiento 0.796 | validación 0.730 | brecha 0.066 | validación en 120 → 800: 0.682 → 0.730
+   | Boosting 5:1 sin sensibles (elegido) entrenamiento 0.983 | validación 0.726 | brecha 0.257 | validación en 120 → 800: 0.666 → 0.726
+   | Guardado: figs/curvas_aprendizaje.png, resultados/curvas_aprendizaje.csv
+
+__pycache__ en la copia: []

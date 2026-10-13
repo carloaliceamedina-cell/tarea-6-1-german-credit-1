@@ -1,0 +1,124 @@
+## \.fit(
+validacion.py:40:        p.fit(X_ent, y_ent)
+busqueda.py:14:    busqueda.fit(X, y)  # 40 combinaciones × 5 pliegues = 200 ajustes
+busqueda.py:22:    busqueda = GridSearchCV(pipeline, PARAM_GRID, cv=cv, scoring="accuracy").fit(X_ent, y_ent)
+
+## fit_transform
+(sin coincidencias)
+
+## train_test_split
+validacion.py:6:from sklearn.model_selection import cross_val_predict, cross_val_score, train_test_split
+validacion.py:34:    """Exactitud y recall de 'bad' con train_test_split 75/25 estratificado por semilla."""
+validacion.py:37:        X_ent, X_pru, y_ent, y_pru = train_test_split(
+busqueda.py:2:from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
+busqueda.py:20:    X_ent, X_pru, y_ent, y_pru = train_test_split(
+
+## StratifiedKFold
+datos.py:5:from sklearn.model_selection import StratifiedKFold
+datos.py:19:    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+busqueda.py:2:from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
+busqueda.py:28:    externa = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+comparar_tres.py:47:    print("Mismo protocolo: StratifiedKFold(5, shuffle=True, random_state=42); coste = 5·FN + 1·FP")
+
+## random_state
+datos.py:19:    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+modelos.py:29:        "Árbol de decisión": DecisionTreeClassifier(random_state=42),
+modelos.py:30:        "Random Forest": RandomForestClassifier(random_state=42),
+modelos.py:47:                                        random_state=42),
+modelos.py:48:        "Random Forest": RandomForestClassifier(random_state=42),
+modelos.py:49:        "Boosting": HistGradientBoostingClassifier(random_state=42),
+modelos.py:57:                                                           random_state=42),
+modelos.py:59:                                                              random_state=42),
+validacion.py:38:            X, y, test_size=0.25, stratify=y, random_state=s)
+busqueda.py:21:        X, y, test_size=0.20, stratify=y, random_state=1)
+busqueda.py:28:    externa = StratifiedKFold(n_splits=5, shuffle=True, random_state=7)
+comparar_tres.py:47:    print("Mismo protocolo: StratifiedKFold(5, shuffle=True, random_state=42); coste = 5·FN + 1·FP")
+
+## Pipeline
+modelos.py:1:"""Pipelines: codificación dentro del Pipeline + modelo con valores por defecto."""
+modelos.py:4:from sklearn.pipeline import Pipeline
+modelos.py:12:    Al ir dentro del Pipeline, el codificador se ajusta solo con el
+modelos.py:23:    return Pipeline([("prep", prep), ("modelo", modelo)])
+
+## ColumnTransformer
+modelos.py:2:from sklearn.compose import ColumnTransformer
+modelos.py:15:    prep = ColumnTransformer(
+
+## GridSearchCV
+busqueda.py:2:from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
+busqueda.py:12:    """GridSearchCV con la CV del proyecto. Devuelve (mejores parámetros, puntaje, objeto)."""
+busqueda.py:13:    busqueda = GridSearchCV(pipeline, PARAM_GRID, cv=cv, scoring="accuracy")
+busqueda.py:22:    busqueda = GridSearchCV(pipeline, PARAM_GRID, cv=cv, scoring="accuracy").fit(X_ent, y_ent)
+busqueda.py:29:    interna = GridSearchCV(pipeline, PARAM_GRID, cv=cv, scoring="accuracy")
+defecto_vs_afinado.py:1:"""Árbol por defecto frente al árbol afinado con GridSearchCV (Tarea 6.2, punto 1)."""
+
+## cross_val_score
+validacion.py:6:from sklearn.model_selection import cross_val_predict, cross_val_score, train_test_split
+validacion.py:13:    puntuaciones = cross_val_score(pipeline, X, y, cv=cv, scoring="accuracy")
+busqueda.py:2:from sklearn.model_selection import GridSearchCV, StratifiedKFold, cross_val_score, train_test_split
+busqueda.py:30:    puntajes = cross_val_score(interna, X, y, cv=externa)
+
+## cross_val_predict
+validacion.py:6:from sklearn.model_selection import cross_val_predict, cross_val_score, train_test_split
+validacion.py:18:    """Recall de 'bad' (y=1) con cross_val_predict.
+validacion.py:23:    pred = cross_val_predict(pipeline, X, y, cv=cv)
+comparar_tres.py:10:from sklearn.model_selection import cross_val_predict, cross_validate
+comparar_tres.py:23:    pred = cross_val_predict(pipe, X, y, cv=cv)
+
+## cross_validate
+comparar_tres.py:10:from sklearn.model_selection import cross_val_predict, cross_validate
+comparar_tres.py:22:    r = cross_validate(pipe, X, y, cv=cv, scoring="accuracy")
+
+## learning_curve
+curvas.py:7:from sklearn.model_selection import learning_curve  # noqa: E402
+curvas.py:16:    tamanos, ent, val = learning_curve(
+
+## class_weight
+modelos.py:56:        "Random Forest (peso 5:1)": RandomForestClassifier(class_weight=PESO_COSTE,
+modelos.py:58:        "Boosting (peso 5:1)": HistGradientBoostingClassifier(class_weight=PESO_COSTE,
+
+## drop(columns
+datos.py:16:    X = df.drop(columns=["clase"])
+datos.py:31:    X = X.drop(columns=SENSIBLES)
+sin_variables_sensibles.py:14:    X_sin = X.drop(columns=SENSIBLES)
+sin_variables_sensibles.py:21:    print(tabla.drop(columns="tiempo_ajuste_s").to_string(index=False, float_format="%.3f"))
+
+## np\.random
+(sin coincidencias)
+
+## default_rng
+(sin coincidencias)
+
+## validar
+validacion.py:11:def validar(pipeline, X, y, cv):
+defecto_vs_afinado.py:9:from validacion import validar
+defecto_vs_afinado.py:16:    por_defecto, desv_defecto, _ = validar(arbol, X, y, cv)
+
+## housing
+(sin coincidencias)
+
+## personal_status
+datos.py:25:SENSIBLES = ["age", "personal_status", "foreign_worker"]
+sin_variables_sensibles.py:19:        evaluar("Boosting 5:1 — sin age, personal_status, foreign_worker", modelo, X_sin, y, cols_cat_sin, cv),
+
+## groupby
+(sin coincidencias)
+
+## Divisiones '/' en código (excluye comentarios, cadenas de rutas y operador de pathlib)
+datos.py:7:RUTA_CSV = Path(__file__).resolve().parent / "datos" / "credit_g.csv"
+defecto_vs_afinado.py:11:SALIDA = Path(__file__).resolve().parent / "resultados"
+defecto_vs_afinado.py:32:    tabla.to_csv(SALIDA / "busqueda_arbol.csv", index=False)
+defecto_vs_afinado.py:35:    print("\nGuardado: resultados/busqueda_arbol.csv")
+numero_honesto.py:10:SALIDA = Path(__file__).resolve().parent / "resultados"
+numero_honesto.py:33:    ]).to_csv(SALIDA / "numero_honesto.csv", index=False)
+numero_honesto.py:34:    print("Guardado: resultados/numero_honesto.csv")
+comparar_tres.py:16:SALIDA = Path(__file__).resolve().parent / "resultados"
+comparar_tres.py:51:    tabla.to_csv(SALIDA / "comparacion_modelos.csv", index=False)
+comparar_tres.py:52:    print("\nGuardado: resultados/comparacion_modelos.csv")
+sin_variables_sensibles.py:10:SALIDA = Path(__file__).resolve().parent / "resultados"
+sin_variables_sensibles.py:22:    tabla.to_csv(SALIDA / "sin_variables_sensibles.csv", index=False)
+sin_variables_sensibles.py:23:    print("Guardado: resultados/sin_variables_sensibles.csv")
+curvas_comparadas.py:30:    (RAIZ / "figs").mkdir(exist_ok=True)
+curvas_comparadas.py:31:    graficar_paneles(curvas, RAIZ / "figs" / "curvas_aprendizaje.png")
+curvas_comparadas.py:32:    pd.DataFrame(filas).to_csv(RAIZ / "resultados" / "curvas_aprendizaje.csv", index=False)
+curvas_comparadas.py:33:    print("Guardado: figs/curvas_aprendizaje.png, resultados/curvas_aprendizaje.csv")

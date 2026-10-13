@@ -1,0 +1,77 @@
+
+====================================================================================================
+MODELO AUDITADO: Boosting 5:1 SIN variables sensibles (17 predictoras)
+====================================================================================================
+Global (n=1000, bad=300): recall bad 0.640 | exactitud 0.726 | good rechazados 166/700 = 0.237
+Umbrales: brecha (global − subgrupo) <= 0.05 y cociente (subgrupo / mejor elegible de la misma variable) >= 0.8; deciden solo subgrupos con n_bad >= 30.
+
+                variable              grupo   n  n_bad  detectados  recall_bad  ic95_bajo  ic95_alto  brecha  cociente            veredicto
+                 housing           for free 108     44          32       0.727      0.582      0.837  -0.087     1.000                 PASA
+                 housing                own 713    186         114       0.613      0.541      0.680   0.027     0.843                 PASA
+                 housing               rent 179     70          46       0.657      0.540      0.758  -0.017     0.904                 PASA
+         personal_status female div/dep/mar 310    109          66       0.606      0.512      0.692   0.034     0.921                 PASA
+         personal_status       male div/sep  50     20          14       0.700      0.481      0.855  -0.060     1.065 no decide (n_bad<30)
+         personal_status       male mar/wid  92     25          16       0.640      0.445      0.798   0.000     0.973 no decide (n_bad<30)
+         personal_status        male single 548    146          96       0.658      0.577      0.730  -0.018     1.000                 PASA
+                    edad               <=25 190     80          49       0.613      0.503      0.712   0.027     0.942                 PASA
+                    edad                >25 810    220         143       0.650      0.585      0.710  -0.010     1.000                 PASA
+foreign_worker (añadido)                 no  37      4           4       1.000      0.510      1.000  -0.360     1.574 no decide (n_bad<30)
+foreign_worker (añadido)                yes 963    296         188       0.635      0.579      0.688   0.005     1.000                 PASA
+
+Contexto (no decide el veredicto):
+                variable              grupo   n  n_good  exactitud  good_rechazados  prop_good_rechazados  coste_por_solicitud  brecha_abs  cociente_vs_mejor_incl_n<30
+                 housing           for free 108      64      0.667               24                 0.375                0.778       0.087                        1.000
+                 housing                own 713     527      0.742              112                 0.213                0.662       0.027                        0.843
+                 housing               rent 179     109      0.698               30                 0.275                0.838       0.017                        0.904
+         personal_status female div/dep/mar 310     201      0.726               42                 0.209                0.829       0.034                        0.865
+         personal_status       male div/sep  50      30      0.640               12                 0.400                0.840       0.060                        1.000
+         personal_status       male mar/wid  92      67      0.696               19                 0.284                0.696       0.000                        0.914
+         personal_status        male single 548     402      0.739               93                 0.231                0.626       0.018                        0.939
+                    edad               <=25 190     110      0.653               35                 0.318                1.000       0.027                        0.942
+                    edad                >25 810     590      0.743              131                 0.222                0.637       0.010                        1.000
+foreign_worker (añadido)                 no  37      33      0.865                5                 0.152                0.135       0.360                        1.000
+foreign_worker (añadido)                yes 963     667      0.721              161                 0.241                0.728       0.005                        0.635
+
+Subgrupos elegibles: 8 | FALLA: 0 -> V4.2 = PASA
+Listados pero sin decidir (n_bad < 30): personal_status=male div/sep (n=50, bad=20, recall 0.700), personal_status=male mar/wid (n=92, bad=25, recall 0.640), foreign_worker (añadido)=no (n=37, bad=4, recall 1.000)
+Sensibilidad (brecha absoluta y cociente frente al mejor incluyendo n<30): subgrupos elegibles que fallarían -> housing=for free, foreign_worker (añadido)=yes
+
+====================================================================================================
+CONTEXTO: mismo Boosting 5:1 CON las 20 variables (no es el modelo auditado)
+====================================================================================================
+Global (n=1000, bad=300): recall bad 0.603 | exactitud 0.727 | good rechazados 154/700 = 0.220
+Umbrales: brecha (global − subgrupo) <= 0.05 y cociente (subgrupo / mejor elegible de la misma variable) >= 0.8; deciden solo subgrupos con n_bad >= 30.
+
+                variable              grupo   n  n_bad  detectados  recall_bad  ic95_bajo  ic95_alto  brecha  cociente            veredicto
+                 housing           for free 108     44          28       0.636      0.489      0.762  -0.033     0.909                 PASA
+                 housing                own 713    186         104       0.559      0.487      0.629   0.044     0.799                FALLA
+                 housing               rent 179     70          49       0.700      0.585      0.795  -0.097     1.000                 PASA
+         personal_status female div/dep/mar 310    109          67       0.615      0.521      0.701  -0.011     1.000                 PASA
+         personal_status       male div/sep  50     20          14       0.700      0.481      0.855  -0.097     1.139 no decide (n_bad<30)
+         personal_status       male mar/wid  92     25          13       0.520      0.335      0.700   0.083     0.846 no decide (n_bad<30)
+         personal_status        male single 548    146          87       0.596      0.515      0.672   0.007     0.969                 PASA
+                    edad               <=25 190     80          52       0.650      0.541      0.745  -0.047     1.000                 PASA
+                    edad                >25 810    220         129       0.586      0.520      0.649   0.017     0.902                 PASA
+foreign_worker (añadido)                 no  37      4           2       0.500      0.150      0.850   0.103     0.827 no decide (n_bad<30)
+foreign_worker (añadido)                yes 963    296         179       0.605      0.548      0.659  -0.001     1.000                 PASA
+
+Contexto (no decide el veredicto):
+                variable              grupo   n  n_good  exactitud  good_rechazados  prop_good_rechazados  coste_por_solicitud  brecha_abs  cociente_vs_mejor_incl_n<30
+                 housing           for free 108      64      0.639               23                 0.359                0.954       0.033                        0.909
+                 housing                own 713     527      0.736              106                 0.201                0.724       0.044                        0.799
+                 housing               rent 179     109      0.743               25                 0.229                0.726       0.097                        1.000
+         personal_status female div/dep/mar 310     201      0.713               47                 0.234                0.829       0.011                        0.878
+         personal_status       male div/sep  50      30      0.640               12                 0.400                0.840       0.097                        1.000
+         personal_status       male mar/wid  92      67      0.685               17                 0.254                0.837       0.083                        0.743
+         personal_status        male single 548     402      0.750               78                 0.194                0.681       0.007                        0.851
+                    edad               <=25 190     110      0.658               37                 0.336                0.932       0.047                        1.000
+                    edad                >25 810     590      0.743              117                 0.198                0.706       0.017                        0.902
+foreign_worker (añadido)                 no  37      33      0.865                3                 0.091                0.351       0.103                        0.827
+foreign_worker (añadido)                yes 963     667      0.722              151                 0.226                0.764       0.001                        1.000
+
+Subgrupos elegibles: 8 | FALLA: 1 -> V4.2 = FALLA
+  - housing=own (n=713, bad=186): recall 0.559; cociente 0.799 < 0.8
+Listados pero sin decidir (n_bad < 30): personal_status=male div/sep (n=50, bad=20, recall 0.700), personal_status=male mar/wid (n=92, bad=25, recall 0.520), foreign_worker (añadido)=no (n=37, bad=4, recall 0.500)
+Sensibilidad (brecha absoluta y cociente frente al mejor incluyendo n<30): subgrupos elegibles que fallarían -> housing=own, housing=rent
+
+Control: recall global del modelo auditado 0.6400 (resultados/sin_variables_sensibles.csv reporta 0.6400)

@@ -1,0 +1,96 @@
+
+==============================================================================
+Modelo auditado
+==============================================================================
+Pipeline(steps=[('prep',
+                 ColumnTransformer(remainder='passthrough',
+                                   transformers=[('cat',
+                                                  OrdinalEncoder(handle_unknown='use_encoded_value',
+                                                                 unknown_value=-1),
+                                                  ['checking_status',
+                                                   'credit_history', 'purpose',
+                                                   'savings_status',
+                                                   'employment',
+                                                   'other_parties',
+                                                   'property_magnitude',
+                                                   'other_payment_plans',
+                                                   'housing', 'job',
+                                                   'own_telephone'])])),
+                ('modelo',
+                 HistGradientBoostingClassifier(class_weight={0: 1, 1: 5},
+                                                random_state=42))])
+{'class_weight': {0: 1, 1: 5}, 'random_state': 42, 'early_stopping': 'auto', 'max_iter': 100, 'learning_rate': 0.1, 'max_leaf_nodes': 31, 'min_samples_leaf': 20}
+Predictoras (17): ['checking_status', 'duration', 'credit_history', 'purpose', 'credit_amount', 'savings_status', 'employment', 'installment_commitment', 'other_parties', 'residence_since', 'property_magnitude', 'other_payment_plans', 'housing', 'existing_credits', 'job', 'num_dependents', 'own_telephone']
+Sensibles fuera del modelo: True
+
+==============================================================================
+V1.1 Rango: métricas en [0, 1] en resultados/*.csv
+==============================================================================
+  comparacion_modelos.csv       exactitud_media    min 0.6940  max 0.7590  en [0,1]: True
+  comparacion_modelos.csv       exactitud_desv     min 0.0058  max 0.0244  en [0,1]: True
+  comparacion_modelos.csv       malos_detectados   min 0.3567  max 0.7133  en [0,1]: True
+  sin_variables_sensibles.csv   exactitud_media    min 0.7260  max 0.7270  en [0,1]: True
+  sin_variables_sensibles.csv   exactitud_desv     min 0.0196  max 0.0227  en [0,1]: True
+  sin_variables_sensibles.csv   malos_detectados   min 0.6033  max 0.6400  en [0,1]: True
+  busqueda_arbol.csv            exactitud_media    min 0.6980  max 0.7300  en [0,1]: True
+  busqueda_arbol.csv            exactitud_desv     min 0.0093  max 0.0517  en [0,1]: True
+  numero_honesto.csv            exactitud          min 0.7175  max 0.7500  en [0,1]: True
+  numero_honesto.csv            desv               min 0.0130  max 0.0130  en [0,1]: True
+  curvas_aprendizaje.csv        entrenamiento      min 0.7963  max 1.0000  en [0,1]: True
+  curvas_aprendizaje.csv        validacion         min 0.6510  max 0.7370  en [0,1]: True
+  curvas_aprendizaje.csv        brecha             min 0.0663  max 0.3490  en [0,1]: True
+  TODAS en [0, 1]: True
+
+==============================================================================
+V1.2 Coherencia: recálculo desde la matriz de confusión (tolerancia 0.01)
+==============================================================================
+  Matriz propia (fuera de pliegue, modelo auditado): TN=534 FP=166 FN=108 TP=192
+  Desde la matriz: exactitud 0.7260 | recall bad 0.6400 | precisión bad 0.5363
+  sklearn:         exactitud 0.7260 | recall bad 0.6400 | precisión bad 0.5363
+  Reportado (Boosting 5:1 — sin age, personal_status, foreign_worker): exactitud_media 0.7260 | malos_detectados 0.6400 | FN 108 | FP 166 | coste 706
+  |Δ exactitud| 0.0000 | |Δ recall| 0.0000 | FN igual True | FP igual True | coste propio 706 igual True
+  Nota: exactitud_media es la media de 5 pliegues de 200 filas, que coincide con la exactitud agregada.
+
+  Coherencia interna de comparacion_modelos.csv y sin_variables_sensibles.csv (P = 300, N = 700):
+    Árbol por defecto (6.1)                        exact. 0.698 vs 0.698 | recall 0.530 vs 0.530 | coste 866 vs 866 -> coincide
+    Árbol afinado                                  exact. 0.730 vs 0.730 | recall 0.357 vs 0.357 | coste 1042 vs 1042 -> coincide
+    Random Forest                                  exact. 0.759 vs 0.759 | recall 0.377 vs 0.377 | coste 989 vs 989 -> coincide
+    Boosting                                       exact. 0.758 vs 0.758 | recall 0.483 vs 0.483 | coste 862 vs 862 -> coincide
+    Random Forest (peso 5:1)                       exact. 0.694 vs 0.694 | recall 0.713 vs 0.713 | coste 650 vs 650 -> coincide
+    Boosting (peso 5:1)                            exact. 0.727 vs 0.727 | recall 0.603 vs 0.603 | coste 749 vs 749 -> coincide
+    Boosting 5:1 — 20 variables                    exact. 0.727 vs 0.727 | recall 0.603 vs 0.603 | coste 749 vs 749 -> coincide
+    Boosting 5:1 — sin age, personal_status, fore  exact. 0.726 vs 0.726 | recall 0.640 vs 0.640 | coste 706 vs 706 -> coincide
+
+==============================================================================
+V1.3 Desbalance
+==============================================================================
+  Distribución: {0: 700, 1: 300} | p_min = 0.300 | K = 2 | 0.8/K = 0.400
+  p_min < 0.8/K: True -> se exige métrica por clase (el proyecto reporta recall de 'bad')
+
+==============================================================================
+V1.4 Línea base 'siempre good'
+==============================================================================
+  exactitud 0.700 | recall bad 0.000 | coste 1500
+  Modelo auditado: exactitud 0.726 | recall bad 0.640 | coste 706 (47.1% del coste de la línea base)
+
+==============================================================================
+V2.1 / V3.1 El codificador se ajusta por pliegue (solo con el entrenamiento)
+==============================================================================
+  pliegue 0: entren. 800 | prueba 200 (bad 60) | categorías aprendidas == categorías del entrenamiento: True | valores de prueba no vistos: 0
+  pliegue 1: entren. 800 | prueba 200 (bad 60) | categorías aprendidas == categorías del entrenamiento: True | valores de prueba no vistos: 0
+  pliegue 2: entren. 800 | prueba 200 (bad 60) | categorías aprendidas == categorías del entrenamiento: True | valores de prueba no vistos: 0
+  pliegue 3: entren. 800 | prueba 200 (bad 60) | categorías aprendidas == categorías del entrenamiento: True | valores de prueba no vistos: 0
+  pliegue 4: entren. 800 | prueba 200 (bad 60) | categorías aprendidas == categorías del entrenamiento: True | valores de prueba no vistos: 0
+
+==============================================================================
+V2.4 Misma partición: pliegues con X completo y con X sin sensibles
+==============================================================================
+  Índices de prueba idénticos en los 5 pliegues: True
+  Mismo objeto de CV: StratifiedKFold(n_splits=5, random_state=42, shuffle=True) vs StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
+
+==============================================================================
+V3.2 Columnas del futuro / derivadas del objetivo
+==============================================================================
+  'clase' entre las predictoras: False
+  Predictoras cuyas categorías separan la clase al 100 % (todas puras): ninguna
+  Categorías con n >= 20 de una sola clase: ninguna

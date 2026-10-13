@@ -1,0 +1,8 @@
+Huella MD5 de datos/credit_g.csv (RESUMEN.md declara 19d37d4238836d135ab13d73dc42d5e4):
+19d37d4238836d135ab13d73dc42d5e4  datos/credit_g.csv
+Archivos comparados (fuera de .git/ y auditorias/): 52
+Proyecto sin cambios: True
+resultados/ igual al respaldo: True
+figs/ igual al respaldo: True
+evidencia/ igual al respaldo: True
+__pycache__ en el proyecto: 0
