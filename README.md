@@ -51,3 +51,36 @@ crédito malo.
 
 Analista → Ingeniero → Auditor → correcciones de cada rol → segunda revisión
 del auditor. Detalle en `ROLES.md` y `evidencia/bitacora_flujo.md`.
+
+---
+
+# Tarea 6.2 — Optimización y auditoría del modelo
+
+Continúa este mismo repositorio. El plan y la regla de selección se fijaron
+antes de medir en `PLAN_6_2.md`; el registro de trabajo está en `BITACORA_6_2.md`.
+
+| Archivo | Qué hace |
+|---|---|
+| `busqueda.py`, `defecto_vs_afinado.py` | GridSearchCV del árbol (40 combinaciones) y mejora frente al defecto |
+| `numero_honesto.py` | Prueba reservada (20 %) y validación cruzada anidada |
+| `comparar_tres.py` | Árbol afinado, Random Forest y boosting (+ variantes con peso 5:1): exactitud, malos detectados, tiempo y coste |
+| `sin_variables_sensibles.py` | Modelo elegido con y sin `age`, `personal_status`, `foreign_worker` |
+| `curvas.py`, `curvas_comparadas.py` | Curvas de aprendizaje → `figs/curvas_aprendizaje.png` |
+| `auditoria_subgrupos.py` | Malos detectados y buenos rechazados por subgrupo del modelo elegido |
+| `tests/test_modelo.py` | Pruebas pytest (piso 0.70, estabilidad, recall ≥ 0.50, Pipeline, sin variables sensibles) |
+| `.claude/skills/auditoria-modelos/` | Skill de auditoría (reconstrucción v2.2-r de la Tarea 4.1) |
+| `auditorias/6_2_boosting_elegido/` | Informe de la Skill sobre el modelo elegido y su evidencia |
+
+```bash
+python defecto_vs_afinado.py
+python numero_honesto.py        # ~30 s
+python comparar_tres.py
+python sin_variables_sensibles.py
+python curvas_comparadas.py
+python auditoria_subgrupos.py
+pytest -v                       # 8 passed, 1 xfailed
+```
+
+**Modelo recomendado:** `HistGradientBoostingClassifier(class_weight={0: 1, 1: 5})`
+sin variables sensibles: exactitud 0.726 ± 0.020, detecta 0.64 de los créditos
+malos y tiene coste 706 (frente a 989 del Random Forest y 1,500 de «siempre good»).
