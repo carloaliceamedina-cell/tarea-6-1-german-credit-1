@@ -29,3 +29,32 @@ def modelos_base():
         "Árbol de decisión": DecisionTreeClassifier(random_state=42),
         "Random Forest": RandomForestClassifier(random_state=42),
     }
+
+
+# --- Tarea 6.2 ---------------------------------------------------------------
+from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
+
+# Peso de la clase 'bad' tomado de la matriz de coste del dataset (5:1), fijado
+# en PLAN_6_2.md antes de ver resultados; no se ajusta con los datos.
+PESO_COSTE = {0: 1, 1: 5}
+
+
+def tres_modelos(max_depth=None, min_samples_leaf=1):
+    """Árbol (por defecto o afinado), Random Forest y boosting, semilla 42."""
+    return {
+        "Árbol": DecisionTreeClassifier(max_depth=max_depth,
+                                        min_samples_leaf=min_samples_leaf,
+                                        random_state=42),
+        "Random Forest": RandomForestClassifier(random_state=42),
+        "Boosting": HistGradientBoostingClassifier(random_state=42),
+    }
+
+
+def variantes_con_coste():
+    """Extensión (respuesta a H2): RF y boosting con peso 5 para la clase 'bad'."""
+    return {
+        "Random Forest (peso 5:1)": RandomForestClassifier(class_weight=PESO_COSTE,
+                                                           random_state=42),
+        "Boosting (peso 5:1)": HistGradientBoostingClassifier(class_weight=PESO_COSTE,
+                                                              random_state=42),
+    }

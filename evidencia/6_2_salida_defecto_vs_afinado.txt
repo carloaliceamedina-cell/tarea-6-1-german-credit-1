@@ -1,0 +1,15 @@
+Espacio de búsqueda: {'modelo__max_depth': [2, 3, 4, 5, 6, 8, 10, None], 'modelo__min_samples_leaf': [1, 5, 10, 20, 50]} (40 combinaciones)
+Por defecto: 0.698 ± 0.017
+Afinado:     0.730 ± 0.019
+Mejora:      +0.032
+Configuración ganadora: {'modelo__max_depth': 5, 'modelo__min_samples_leaf': 1}
+
+Las 5 mejores combinaciones:
+max_depth  min_samples_leaf  exactitud_media  exactitud_desv  rango
+        5                 1            0.730           0.019      1
+        5                 5            0.730           0.021      2
+        6                10            0.723           0.019      3
+        6                 1            0.722           0.020      4
+        4                20            0.721           0.045      5
+
+Guardado: resultados/busqueda_arbol.csv

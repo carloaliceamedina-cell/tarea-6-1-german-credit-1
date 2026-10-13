@@ -45,3 +45,17 @@ def particion_unica(pipeline, X, y, semillas=SEMILLAS_PARTICION):
             "recall_bad": recall_score(y_pru, pred, pos_label=1),
         })
     return pd.DataFrame(filas)
+
+
+# --- Tarea 6.2 ---------------------------------------------------------------
+COSTE_FN = 5  # aprobar un crédito malo
+COSTE_FP = 1  # rechazar un crédito bueno
+
+
+def coste(y, pred):
+    """Coste total con la matriz de German Credit: 5·FN + 1·FP."""
+    y = np.asarray(y)
+    pred = np.asarray(pred)
+    fn = int(((y == 1) & (pred == 0)).sum())
+    fp = int(((y == 0) & (pred == 1)).sum())
+    return COSTE_FN * fn + COSTE_FP * fp, fn, fp
