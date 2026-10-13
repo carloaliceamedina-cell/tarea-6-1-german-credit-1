@@ -3,7 +3,7 @@ name: auditoria-modelos
 description: Audita un proyecto de clasificación (notebook o scripts .py) SIN modificarlo y entrega AUDIT_REPORT_<proyecto>.md con veredictos PASA / FALLA / NO SE PUEDE DETERMINAR, cada uno con evidencia citada. Úsala antes de recomendar o desplegar un modelo, o cuando se pida "auditar", "revisar fuga", "revisar métricas" o "revisar subgrupos".
 ---
 
-> **Procedencia.** Versión **v2.1-r**: reconstrucción de la Skill de la Tarea 4.1
+> **Procedencia.** Versión **v2.2-r** (v2.1-r + refinamiento 6): reconstrucción de la Skill de la Tarea 4.1
 > (v2.1, commit `fe73cdc` del repositorio `mai540-tarea-4.1`), hecha el
 > 12-oct-2026 porque la carpeta `.claude/` no estaba en la copia descargada del
 > repositorio. Fuentes: `docs/Tarea_4_1_Informe_APA.pdf` (Tabla 1, criterios
@@ -79,6 +79,19 @@ filtran información y que el desempeño no se degrada en subgrupos relevantes.
 | V5.2 | Estado aleatorio | No se consume un `rng` global en varias cargas | Una función de carga usa un `rng` global y se llama más de una vez | — |
 | V6.1 | Divisiones seguras | Las divisiones entre columnas están protegidas contra cero | Hay división sin protección | — |
 | V6.2 | Validación antes de entrenar | Existe una validación de datos y se llama antes del `fit` | Existe pero nunca se llama | No existe función de validación |
+
+**Cómo se calcula V4.2 (refinamiento 6, v2.2-r).** La auditoría de la Tarea 6.2
+tuvo que decidir tres cosas fuera del archivo; quedan fijadas aquí:
+- **Sentido de la brecha:** solo cuenta hacia abajo, `brecha = global − subgrupo`.
+  Un subgrupo por encima de la métrica global no FALLA por brecha.
+- **"n" depende de la métrica:** si la métrica prioritaria es exhaustividad
+  (recall), n = número de positivos reales del subgrupo; si es precisión, n =
+  número de positivos predichos; si es exactitud, n = filas del subgrupo.
+- **Mejor subgrupo para el cociente:** el de mejor métrica dentro de la misma
+  variable, elegido solo entre los subgrupos con n ≥ 30.
+- La métrica global es la de todas las predicciones fuera de pliegue juntas.
+- Si el modelo usa pesos o umbral por costo, reportar además la tasa de falsos
+  positivos por subgrupo como contexto (no decide el veredicto).
 
 **Justificación de los umbrales de V4.2.** 0.05 es la máxima pérdida que se
 acepta frente a la métrica global; el cociente 0.80 replica la regla de las
