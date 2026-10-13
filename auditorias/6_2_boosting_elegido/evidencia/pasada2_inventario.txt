@@ -1,0 +1,25 @@
+## Inventario de la segunda pasada (archivos cambiados: datos.py, auditoria_subgrupos.py)
+## validar_datos
+datos.py:10:def validar_datos(df):
+datos.py:30:    validar_datos(df)  # antes de cualquier fit
+## \.fit(
+(sin coincidencias)
+## fit_transform
+(sin coincidencias)
+## cross_val_predict
+auditoria_subgrupos.py:10:from sklearn.model_selection import cross_val_predict
+auditoria_subgrupos.py:34:    pred = cross_val_predict(modelo, X, y, cv=cv)
+## random_state
+datos.py:37:    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+## np\.random
+(sin coincidencias)
+## default_rng
+(sin coincidencias)
+## groupby
+auditoria_subgrupos.py:21:    for g, d in t.groupby("grupo"):
+## housing
+auditoria_subgrupos.py:38:        "housing": X_completo["housing"],
+##  / 
+datos.py:7:RUTA_CSV = Path(__file__).resolve().parent / "datos" / "credit_g.csv"
+auditoria_subgrupos.py:15:SALIDA = Path(__file__).resolve().parent / "resultados"
+auditoria_subgrupos.py:49:    todo.to_csv(SALIDA / "auditoria_subgrupos.csv", index=False)

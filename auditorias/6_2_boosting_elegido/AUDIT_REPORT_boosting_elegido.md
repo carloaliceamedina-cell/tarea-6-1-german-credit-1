@@ -104,3 +104,49 @@ Decisiones que tomé porque la Skill no las define (la Skill necesita refinarse 
 | `v1_v3_metricas_y_fuga.py` | `v1_v3_metricas_y_fuga.txt` | V1.1–V1.4, V2.1–V2.4, V3.1–V3.2 |
 | `v4_subgrupos.py` | `v4_subgrupos.txt`, `v4_subgrupos_modelo_auditado.csv` | V4.2 |
 | `integridad.sh` | `integridad.txt` | Regla 1, V5.1 (MD5 de los datos) |
+
+## Segunda pasada (Skill v2.2-r)
+
+**Fecha:** 2026-10-12.
+**Skill:** `auditoria-modelos` v2.2-r, que añade el refinamiento 6: cómo se calcula V4.2.
+**Cambios auditados** (leídos con `git log` y `git show`, sin escribir en el repositorio):
+- `45d1f71`: `validar_datos()` en `datos.py`.
+- `a543134`: `auditoria_subgrupos.py` y sus salidas.
+- `e55f0d2`: la nueva versión de la Skill.
+
+Para no escribir en el proyecto, todo se ejecutó en `/tmp/claude-0/auditoria_6_2/pasada2/copia/`. Antes se guardó un respaldo de `resultados/`, `figs/` y `evidencia/`. Al final, el proyecto quedó idéntico: los 55 archivos tienen la misma huella MD5 y no quedó `__pycache__` ni `.pytest_cache` (`evidencia/pasada2_integridad.txt`).
+
+> **Nota sobre las citas de la primera pasada.** Las citas de `datos.py` de la primera pasada corresponden a la versión del commit `fc1134f`. Con `validar_datos()` las líneas se desplazaron 18 posiciones: `datos.py:14` → 32, `:16` → 34, `:19` → 37, `:25-33` → 43-51. El contenido citado no cambió.
+
+### Cambios de veredicto
+
+| ID | Antes | Ahora | Evidencia |
+|---|---|---|---|
+| V4.1 | FALLA | **PASA** | `auditoria_subgrupos.py:30-49` calcula el recall de `bad` del modelo auditado por `housing`, `personal_status` y edad, con predicciones fuera de pliegue y la misma CV (`auditoria_subgrupos.py:31-34`). También calcula n, n_bad, la exactitud y la proporción de buenos rechazados. Su salida se reproduce byte a byte, y el CSV coincide con mi reproducción independiente (diferencia máxima 0.0000 en recall, exactitud y buenos rechazados; n y n_bad idénticos). Fuentes: `evidencia/6_2_salida_auditoria_subgrupos.txt`, `resultados/auditoria_subgrupos.csv`, `evidencia/pasada2_verificacion.txt` (V4.1/V4.2) |
+| V6.2 | NSPD | **PASA** | La función `validar_datos()` existe (`datos.py:10-24`). Se llama en `cargar_datos()` justo después de leer el CSV y antes de devolver los datos (`datos.py:29-30`). Todos los scripts y `cargar_datos_sin_sensibles()` (`datos.py:48`) pasan por ahí, y no hay ningún `fit` en `datos.py` (`evidencia/pasada2_inventario.txt`). Acepta el CSV real y lanza `ValueError` en los 5 casos defectuosos probados: falta `clase`, `clase` = 'regular', un faltante, 999 filas, 22 columnas (`evidencia/pasada2_verificacion.txt`, V6.2) |
+| V4.2 | PASA (con 3 decisiones mías) | **PASA (con las reglas de la Skill)** | Apliqué el refinamiento 6 tal como está escrito. n = número de `bad` del subgrupo. Brecha = 0.640 − subgrupo, solo hacia abajo. Mejor subgrupo = el mejor de la misma variable con n_bad ≥ 30. Global = todas las predicciones fuera de pliegue juntas (0.640). Resultado: 7 subgrupos elegibles en las tres variables pedidas, 0 FALLA, brecha máxima 0.034 (female div/dep/mar), cociente mínimo 0.843 (`housing` = own). male div/sep (20 `bad`) y male mar/wid (25 `bad`) se listan sin decidir. Los veredictos coinciden con los de la primera pasada (`evidencia/pasada2_verificacion.txt`) |
+| V0.1 | PASA (sin pytest) | **PASA (con pytest)** | Los 6 scripts, incluido `auditoria_subgrupos.py`, terminan con código 0 usando el `datos.py` corregido, y todas sus salidas y CSV se reproducen. La columna de tiempo de `comparar_tres.py` se excluye de la comparación. `pytest -v` da **8 passed, 1 xfailed** (el árbol por defecto, marcado `xfail` estricto a propósito), con código de salida 0 (`evidencia/pasada2_verificacion.txt`) |
+
+Las demás verificaciones (V1.1–V1.4, V2.1–V2.5, V3.1–V3.2, V5.1–V5.2 y V6.1) no cambian: los cambios no tocan el código que evalúan. Lo comprobé así:
+- Las cifras de `comparacion_modelos.csv` y `sin_variables_sensibles.csv` se reproducen sin cambios con el nuevo `datos.py`.
+- El CSV nuevo tiene sus métricas en [0, 1] (V1.1).
+- Los dos archivos cambiados no tienen `np.random`, `default_rng` ni divisiones entre columnas (V5.2, V6.1; `evidencia/pasada2_inventario.txt`).
+
+### Nuevo conteo
+
+**PASA 18 · FALLA 0 · NSPD 0** (antes: 16 · 1 · 1).
+
+### Ambigüedades que quedan
+
+Resueltas por la v2.2-r: las de la primera pasada sobre el sentido de la brecha, la definición de n, el mejor subgrupo y el valor global (decisiones 1–4).
+
+Siguen abiertas:
+1. **V6.2 no define qué debe validar la función.** `validar_datos()` cumple el criterio tal como está escrito, pero tiene dos límites:
+   - Fija la forma exacta del archivo de entrenamiento, (1000, 21) en `datos.py:23-24`, así que rechazaría cualquier lote nuevo en producción.
+   - No revisa rangos ni categorías: acepta `age` = −5 y `housing` = 'boat' (`evidencia/pasada2_verificacion.txt`).
+
+   Se recomienda que la Skill pida, como mínimo, comprobar el esquema y los dominios, no el tamaño.
+2. **V4.2, tasa de falsos positivos sin umbral.** La v2.2-r pide reportarla como contexto, y el proyecto ya lo hace. Pero no dice qué hacer cuando la diferencia es grande: hoy, ≤ 25 años tiene 0.318 frente a 0.222 (1.43 veces), y `housing` = for free tiene 0.375 frente a 0.213 (1.76 veces). Tampoco define el n mínimo para esa tasa, que debería ser el número de `good`. La diferencia sigue sin veredicto.
+3. **V4.1, qué subgrupos son "relevantes".** El script del proyecto cubre `housing`, `personal_status` y edad, pero no `foreign_worker`, que yo añadí en la primera pasada. La Skill no dice si el auditor puede ampliar la lista ni si el proyecto debe cubrir la ampliación. En la primera pasada, `foreign_worker` = yes pasaba (cociente 1.000) y `foreign_worker` = no tiene 4 `bad`, así que no cambia el veredicto.
+4. **V4.1, quién calcula.** Esta ambigüedad se volvió irrelevante en este proyecto porque ahora el proyecto calcula la métrica, pero la Skill todavía no dice si la reproducción del auditor (paso 5) basta para cumplir V4.1.
+5. **V6.1 sin divisiones y V0.1 con columnas de tiempo.** Siguen igual que en la primera pasada (decisiones 6 y 7).

@@ -1,0 +1,118 @@
+
+==========================================================================================
+V0.1 Re-ejecución de los scripts (con el datos.py corregido)
+==========================================================================================
+
+--- defecto_vs_afinado.py: código de salida 0 | Traceback: False
+  salida idéntica a evidencia/6_2_salida_defecto_vs_afinado.txt: True
+  resultados/busqueda_arbol.csv reproducido (sin tiempo): True
+
+--- numero_honesto.py: código de salida 0 | Traceback: False
+  salida idéntica a evidencia/6_2_salida_numero_honesto.txt: True
+  resultados/numero_honesto.csv reproducido (sin tiempo): True
+
+--- comparar_tres.py: código de salida 0 | Traceback: False
+  resultados/comparacion_modelos.csv reproducido (sin tiempo): True
+
+--- sin_variables_sensibles.py: código de salida 0 | Traceback: False
+  salida idéntica a evidencia/6_2_salida_sin_sensibles.txt: True
+  resultados/sin_variables_sensibles.csv reproducido (sin tiempo): True
+
+--- curvas_comparadas.py: código de salida 0 | Traceback: False
+  salida idéntica a evidencia/6_2_salida_curvas.txt: True
+  resultados/curvas_aprendizaje.csv reproducido (sin tiempo): True
+
+--- auditoria_subgrupos.py: código de salida 0 | Traceback: False
+  salida idéntica a evidencia/6_2_salida_auditoria_subgrupos.txt: True
+  resultados/auditoria_subgrupos.csv reproducido (sin tiempo): True
+   | Boosting 5:1 sin variables sensibles · malos detectados global: 0.640
+   | 
+   |        variable              grupo   n  n_bad  exactitud  malos_detectados  buenos_rechazados
+   |         housing           for free 108     44      0.667             0.727              0.375
+   |         housing                own 713    186      0.742             0.613              0.213
+   |         housing               rent 179     70      0.698             0.657              0.275
+   | personal_status female div/dep/mar 310    109      0.726             0.606              0.209
+   | personal_status       male div/sep  50     20      0.640             0.700              0.400
+   | personal_status       male mar/wid  92     25      0.696             0.640              0.284
+   | personal_status        male single 548    146      0.739             0.658              0.231
+   |            edad               <=25 190     80      0.653             0.613              0.318
+   |            edad                >25 810    220      0.743             0.650              0.222
+   | 
+   | Guardado: resultados/auditoria_subgrupos.csv
+
+==========================================================================================
+pytest (en la copia; -p no:cacheprovider para no crear .pytest_cache)
+==========================================================================================
+============================= test session starts ==============================
+platform linux -- Python 3.13.16, pytest-9.1.1, pluggy-1.6.0 -- /usr/bin/python3
+rootdir: /tmp/claude-0/auditoria_6_2/pasada2/copia
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.15.1
+collecting ... collected 9 items
+
+tests/test_modelo.py::test_supera_a_siempre_bueno[arbol_defecto] XFAIL   [ 11%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[arbol_afinado] PASSED  [ 22%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[random_forest] PASSED  [ 33%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[boosting] PASSED       [ 44%]
+tests/test_modelo.py::test_supera_a_siempre_bueno[boosting_5a1_elegido] PASSED [ 55%]
+tests/test_modelo.py::test_resultado_estable PASSED                      [ 66%]
+tests/test_modelo.py::test_detecta_al_menos_la_mitad_de_los_malos PASSED [ 77%]
+tests/test_modelo.py::test_codificacion_dentro_del_pipeline_y_sin_objetivo PASSED [ 88%]
+tests/test_modelo.py::test_modelo_elegido_no_usa_variables_sensibles PASSED [100%]
+
+========================= 8 passed, 1 xfailed in 8.35s =========================
+código de salida: 0
+
+==========================================================================================
+V6.2 validar_datos(): existe, se llama antes del fit y rechaza datos defectuosos
+==========================================================================================
+  datos.py:10: def validar_datos(df):
+  datos.py:27: def cargar_datos(ruta=RUTA_CSV):
+  datos.py:29: df = pd.read_csv(ruta)
+  datos.py:30: validar_datos(df)  # antes de cualquier fit
+  datos.py:46: def cargar_datos_sin_sensibles(ruta=RUTA_CSV):
+  cargar_datos_sin_sensibles() pasa por cargar_datos(): True
+  CSV real: acepta sin error
+  sin columna clase                -> ValueError: Falta la columna objetivo 'clase'
+  clase con valor 'regular'        -> ValueError: Valores de 'clase' no esperados: {'regular'}
+  un faltante en credit_amount     -> ValueError: Hay valores faltantes: ['credit_amount']
+  una fila menos                   -> ValueError: Forma inesperada (999, 21); se esperaba (1000, 21)
+  una columna extra                -> ValueError: Forma inesperada (1000, 22); se esperaba (1000, 21)
+  Casos que no forman parte del contrato declarado (solo informativos):
+    'clase' con espacios (' bad')    -> ValueError: Valores de 'clase' no esperados: {' bad'}
+    age = -5 (fuera de rango)        -> acepta
+    housing con categoría nueva      -> acepta
+
+==========================================================================================
+V4.1 / V4.2 con la Skill v2.2-r (n = positivos reales; brecha hacia abajo; mejor elegible por variable)
+==========================================================================================
+  Proyecto (resultados/auditoria_subgrupos.csv) frente a la reproducción del auditor (pasada 1):
+       variable              grupo  n_proy  n_bad_proy  malos_detectados  recall_bad  d_recall  d_exact  d_fpr
+        housing           for free     108          44            0.7273      0.7273    0.0000   0.0000 0.0000
+        housing                own     713         186            0.6129      0.6129    0.0000   0.0000 0.0000
+        housing               rent     179          70            0.6571      0.6571    0.0000   0.0000 0.0000
+personal_status female div/dep/mar     310         109            0.6055      0.6055    0.0000   0.0000 0.0000
+personal_status       male div/sep      50          20            0.7000      0.7000    0.0000   0.0000 0.0000
+personal_status       male mar/wid      92          25            0.6400      0.6400    0.0000   0.0000 0.0000
+personal_status        male single     548         146            0.6575      0.6575    0.0000   0.0000 0.0000
+           edad               <=25     190          80            0.6125      0.6125    0.0000   0.0000 0.0000
+           edad                >25     810         220            0.6500      0.6500    0.0000   0.0000 0.0000
+  Filas: 9 | máx. |Δ| recall 0.0000 | exactitud 0.0000 | buenos rechazados 0.0000 | n y n_bad idénticos: True
+
+  Global (todas las predicciones fuera de pliegue juntas) = 0.640
+       variable              grupo   n  n_bad  malos_detectados  brecha  cociente  buenos_rechazados        veredicto
+        housing           for free 108     44             0.727  -0.087     1.000              0.375             PASA
+        housing                own 713    186             0.613   0.027     0.843              0.213             PASA
+        housing               rent 179     70             0.657  -0.017     0.904              0.275             PASA
+personal_status female div/dep/mar 310    109             0.606   0.034     0.921              0.209             PASA
+personal_status       male div/sep  50     20             0.700  -0.060     1.065              0.400 lista, no decide
+personal_status       male mar/wid  92     25             0.640   0.000     0.973              0.284 lista, no decide
+personal_status        male single 548    146             0.658  -0.018     1.000              0.231             PASA
+           edad               <=25 190     80             0.613   0.027     0.942              0.318             PASA
+           edad                >25 810    220             0.650  -0.010     1.000              0.222             PASA
+
+  Elegibles 7 | FALLA 0 | brecha máx 0.034 | cociente mín 0.843 -> V4.2 = PASA
+  V1.1 (CSV nuevo) métricas en [0,1]: True
+
+__pycache__ / .pytest_cache en la copia: []
